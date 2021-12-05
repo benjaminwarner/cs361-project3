@@ -8,8 +8,7 @@ import fa.nfa.NFA;
  * Implementation of the REInterface. 
  * 
  * This class takes a regular expression and builds an NFA
- * from said regular expression, using the recursive descent parser
- * algorithm.
+ * from said regular expression.
  * 
  * @author Benjamin Warner
  */
@@ -58,6 +57,10 @@ import fa.nfa.NFA;
 		return this.nfa;
 	}
 
+	/**
+	 * Process a grouped term from the regular expression.
+	 * Returns upon encountering the closing parantheses.
+	 */
 	private void processTerm() {
 		while (this.more()) {
 			switch (peek()) {
@@ -82,6 +85,17 @@ import fa.nfa.NFA;
 		}
 	}
 
+	/**
+	 * Add a state to the NFA that is being built with the appropriate transitions.
+	 * 
+	 * If the character (or group of characters) that is being added should be repeated,
+	 * the transition is a self loop.
+	 * 
+	 * If there are multiple choices for a state transition, then each choice is added as a 
+	 * transition to the new state.
+	 * 
+	 * Otherwise, only a single transition is added.
+	 */
 	private void addStateToNFA() {
 		if (this.peek() == '*') {
 			this.eat('*');
@@ -108,6 +122,11 @@ import fa.nfa.NFA;
 		}
 	}
 
+	/**
+	 * Process an input character and add a state transition to the NFA.
+	 * 
+	 * @param c the next input character read from the regular expression.
+	 */
 	private void processCharacter(Character c) {
 		this.firstChoice = c;
 		this.addStateToNFA();
