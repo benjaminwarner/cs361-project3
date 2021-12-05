@@ -52,6 +52,7 @@ import fa.nfa.NFA;
 					break;
 			}
 		}
+		this.nfa.addAbc(this.alphabet);
 		this.nfa.addFinalState(this.lastStateName);
 
 		return this.nfa;
@@ -70,10 +71,12 @@ import fa.nfa.NFA;
 					return;
 				case '|':
 					this.eat('|');
-					this.processChoice(this.next());
+					this.secondChoice = this.next();
+					this.alphabet.add(secondChoice);
 					break;
 				default:
-					this.processCharacter(this.next());
+					this.firstChoice = this.next();
+					this.alphabet.add(firstChoice);
 					break;
 			}
 		}
@@ -90,7 +93,7 @@ import fa.nfa.NFA;
 			}
 		} else if (this.peek() == '|') {
 			this.eat('|');
-			this.processChoice(this.next());
+			this.secondChoice = this.next();
 			String nextStateName = String.format("q%d", this.stateCounter);
 			this.nfa.addTransition(this.lastStateName, this.firstChoice, nextStateName);
 			this.nfa.addTransition(this.lastStateName, this.secondChoice, nextStateName);
@@ -107,16 +110,7 @@ import fa.nfa.NFA;
 
 	private void processCharacter(Character c) {
 		this.firstChoice = c;
-		this.alphabet.add(c);
-		this.nfa.addAbc(this.alphabet);
-		if (!this.more())
-			this.addStateToNFA();
-	}
-
-	private void processChoice(Character c) {
-		this.secondChoice = c;
-		this.alphabet.add(c);
-		this.nfa.addAbc(this.alphabet);
+		this.addStateToNFA();
 	}
 
 	/**
